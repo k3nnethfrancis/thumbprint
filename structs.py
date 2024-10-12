@@ -60,9 +60,10 @@ def generate_user_metadata_prompt(
     logger.debug(f"Web content: {json.dumps(web_content, indent=2)}")
 
     formatted_web_content = "\n".join([
-        f"URL: {item['site_url']}\n"
-        f"Short Description: {item['site_short_description']}\n"
-        f"Description: {item['description']}\n"
+        f"Title: {item.get('title', 'N/A')}\n"
+        f"Site Description: {item.get('site_description', 'N/A')}\n"
+        f"Content Description: {item.get('content_description', 'N/A')}\n"
+        f"User Analysis: {item.get('user_analysis', 'N/A')}\n"
         for item in web_content
     ])
 
@@ -101,17 +102,19 @@ if __name__ == "__main__":
         "affiliations": ["OpenAI", "Stanford University"]
     }
 
-    # Sample web content (simulating the output of read_web function)
+    # Sample web content (updated to match WebsiteSchema)
     web_content = [
         {
-            "site_url": "https://www.lesswrong.com",
-            "site_short_description": "Less Wrong on AI Alignment",
-            "description": "The website is a blog post about AI alignment featuring a discussion about the alignment problem and the role of AI safety in the development of advanced AI systems."
+            "title": "Less Wrong on AI Alignment",
+            "site_description": "A community blog focused on refining the art of human rationality",
+            "content_description": "The website features a discussion about the AI alignment problem and the role of AI safety in the development of advanced AI systems.",
+            "user_analysis": "Visiting this site suggests the user has a strong interest in AI safety, rationality, and the philosophical implications of advanced AI development."
         },
         {
-            "site_url": "https://news.ycombinator.com",
-            "site_short_description": "Hacker News - a new Wearable for Glucose Monitoring",
-            "description": "The website is a blog post about a new wearable for glucose monitoring."
+            "title": "Hacker News - a new Wearable for Glucose Monitoring",
+            "site_description": "A social news website focusing on computer science and entrepreneurship",
+            "content_description": "The website features a discussion about a new wearable device for continuous glucose monitoring.",
+            "user_analysis": "Visiting this site indicates the user is interested in tech news, particularly in health tech innovations and wearable devices."
         }
     ]
 

@@ -35,7 +35,7 @@ from llama_index.llms.openai import OpenAI
 from llama_index.program.openai import OpenAIPydanticProgram
 from structs import UserMetadata, generate_user_metadata_prompt
 from typing import List
-from read_web import read_web
+from read_web import FirecrawlWrapper
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -120,9 +120,20 @@ def generate_persona_cookie(user_data: dict, urls: List[str]):
     """
     llm = get_llm()
     
-    web_content = []
-    for url in urls:
-        web_content.extend(read_web(url))
+    FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
+    if not FIRECRAWL_API_KEY:
+        logger.error("FIRECRAWL_API_KEY environment variable is not set")
+        raise ValueError("FIRECRAWL_API_KEY environment variable is not set")
+    
+    firecrawl = FirecrawlWrapper(api_key=FIRECRAWL_API_KEY)
+    try:
+        web_content = firecrawl.scrape_multiple_urls(urls)
+    except Exception as e:
+        logger.error(f"Error occurred while scraping URLs: {e}")
+        raise
+    
+    if not web_content:
+        logger.warning("No web content was scraped. Persona cookie may be incomplete.")
     
     program = create_program(llm, user_data, web_content)
     persona_cookie = generate_user_metadata_str(program, user_data, web_content)
@@ -134,12 +145,24 @@ if __name__ == "__main__":
     user_data = {
         "name": "Jane Doe",
         "birthday": "1990-05-15",
-        "affiliations": ["OpenAI", "Stanford University"]
+        # "affiliations": ["OpenAI", "Stanford University"]
+        "job_title": "SpaceX Engineer"
     }
     urls = [
         "https://www.lesswrong.com",
         "https://news.ycombinator.com"
     ]
     
-    persona_cookie = generate_persona_cookie(user_data, urls)
-    print(persona_cookie)
+    print("Generating persona cookie...")
+    print("User Data:")
+    print(json.dumps(user_data, indent=2))
+    print("\nURLs:")
+    for url in urls:
+        print(f"- {url}")
+    
+    try:
+        persona_cookie = generate_persona_cookie(user_data, urls)
+        print("\nGenerated Persona Cookie:")
+        print(json.dumps(json.loads(persona_cookie), indent=2))
+    except Exception as e:
+        print(f"\nError generating persona cookie: {e}")
