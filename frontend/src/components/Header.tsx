@@ -1,5 +1,4 @@
 import { Center, Flex, Spacer, Text } from "@chakra-ui/react";
-import { Login } from "./auth/LogIn";
 import { LogOut } from "./auth/LogOut";
 import { useSession } from "next-auth/react";
 import { ThumbprintIconWhite } from "./assets/icons/Icons";
@@ -46,7 +45,7 @@ export const Header = () => {
         p={4}
         m="auto"
       >
-        {session ? <LogOut /> : <Login />}
+        {session && <LogOut />}
       </Flex>
     </Flex>
   );

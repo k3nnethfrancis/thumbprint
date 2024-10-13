@@ -15,6 +15,54 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon, CopyIcon, LicenseIcon } from "../assets/icons/Icons";
 
+const CopyButton = ({ data, toastTitle }) => {
+  const toast = useToast();
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(data);
+    toast({
+      title: toastTitle,
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+    });
+  };
+
+  return (
+    <Button
+      onClick={(e) => {
+        e.stopPropagation();
+        copyToClipboard();
+      }}
+      bg="transparent"
+      border="none"
+      px={2}
+    >
+      <CopyIcon />
+    </Button>
+  );
+};
+
+const DataDisplaySection = ({ title, content, onCopy }) => (
+  <>
+    <Flex justify="start">
+      <Text fontWeight="bold">{title}</Text>
+      <CopyButton data={content} toastTitle={`${title} copied`} />
+    </Flex>
+    <Spacer py={2} />
+    <Text
+      fontFamily="monospace"
+      fontSize="sm"
+      whiteSpace="pre-wrap"
+      noOfLines={3}
+      overflow="hidden"
+      textOverflow="ellipsis"
+    >
+      {content}
+    </Text>
+  </>
+);
+
 export default function PersonaCookieForm({
   userData,
   setUserData,
@@ -23,20 +71,7 @@ export default function PersonaCookieForm({
   historyData,
   setHistoryData,
 }) {
-  const [cookie, setCookie] = useState("");
   const [open, setOpen] = useState(false);
-
-  const toast = useToast();
-
-  const copyToClipboard = (data) => {
-    navigator.clipboard.writeText(data);
-    toast({
-      title: "Copied to clipboard",
-      status: "success",
-      duration: 1000,
-      isClosable: true,
-    });
-  };
 
   return (
     <Box
@@ -55,7 +90,7 @@ export default function PersonaCookieForm({
           width: "8px",
         },
         "&::-webkit-scrollbar-thumb": {
-          bg: "#141515",
+          bg: "#3B596A",
           borderRadius: "full",
         },
       }}
@@ -70,7 +105,12 @@ export default function PersonaCookieForm({
         <Text fontWeight="bold" fontSize="2xl" mb={4}>
           Contexts
         </Text>
+        <CopyButton
+          data={JSON.stringify(aIData)}
+          toastTitle="Contexts copied"
+        />
       </Flex>
+
       <Collapse in={open} animateOpacity>
         <VStack spacing={4}>
           <Divider />
@@ -85,72 +125,27 @@ export default function PersonaCookieForm({
               bg="gray.50"
               w="100%"
             >
-              <Flex justify="start">
-                <Text fontWeight="bold">Description</Text>
-                <Button
-                  onClick={() => copyToClipboard(aIData.description)}
-                  bg="transparent"
-                  border="none"
-                >
-                  <CopyIcon />
-                </Button>
-              </Flex>
-
+              <DataDisplaySection
+                title="Description"
+                content={aIData.description}
+              />
               <Spacer py={2} />
-              <Text
-                fontFamily="monospace"
-                fontSize="sm"
-                whiteSpace="pre-wrap"
-                noOfLines={3}
-                overflow="hidden"
-                textOverflow="ellipsis"
-              >
-                {aIData.description}
-              </Text>
-
+              <DataDisplaySection title="Tags" content={aIData.tags} />
               <Spacer py={2} />
-              {/* interests */}
-              <Flex justify="start">
-                <Text fontWeight="bold">Interests</Text>
-                <Button
-                  onClick={() => copyToClipboard(aIData.Interests)}
-                  bg="transparent"
-                  border="none"
-                >
-                  <CopyIcon />
-                </Button>
-              </Flex>
+              <DataDisplaySection
+                title="Interests"
+                content={aIData.interests}
+              />
               <Spacer py={2} />
-              <Text
-                fontFamily="monospace"
-                fontSize="sm"
-                whiteSpace="pre-wrap"
-                noOfLines={3}
-              >
-                {aIData.interests}
-              </Text>
-
+              <DataDisplaySection
+                title="Personality Traits"
+                content={aIData.personality_traits}
+              />
               <Spacer py={2} />
-              {/* hobbies */}
-              <Flex justify="start">
-                <Text fontWeight="bold">Hobbies</Text>
-                <Button
-                  onClick={() => copyToClipboard(aIData.hobbies)}
-                  bg="transparent"
-                  border="none"
-                >
-                  <CopyIcon />
-                </Button>
-              </Flex>
-              <Spacer py={2} />
-              <Text
-                fontFamily="monospace"
-                fontSize="sm"
-                whiteSpace="pre-wrap"
-                noOfLines={3}
-              >
-                {aIData.career_and_business}
-              </Text>
+              <DataDisplaySection
+                title="Career and Business"
+                content={aIData.career_and_business}
+              />
             </Box>
           )}
         </VStack>

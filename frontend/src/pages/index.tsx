@@ -1,9 +1,10 @@
+import { Login } from "@/components/auth/LogIn";
 import { HistoryEditor } from "@/components/cards/HistoryEditor";
 import PersonaCookieForm from "@/components/cards/PersonaMaker";
 import { ProfileCard } from "@/components/cards/ProfileCard";
 import { UserProfileEditor } from "@/components/cards/UserProfileEditor";
 import { Header } from "@/components/Header";
-import { Text, Image, Box, Flex, Center, useToast } from "@chakra-ui/react";
+import { Box, Flex, Center, useToast } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -15,6 +16,7 @@ export default function Profile() {
   const [historyData, setHistoryData] = useState<string[]>([]);
   const [editableAIData, setEditableAIData] = useState<string[]>([]);
   const [editableHistoryData, setEditableHistoryData] = useState<string[]>([]);
+  const [selectedSites, setSlectedSites] = useState<string[]>([]);
   const [editableUserData, setEditableUserData] = useState({
     name: "",
     email: "",
@@ -53,6 +55,11 @@ export default function Profile() {
   // Simulating browser history for demo purposes
   useEffect(() => {
     const history = [
+      "Amazon.com",
+      "wikipedia.com",
+      "netflix.com",
+      "youtube.com",
+      "nytimes.com",
       "hackernews.com",
       "stackoverflow.com",
       "cerebralbeach.com",
@@ -127,7 +134,24 @@ export default function Profile() {
       zIndex="0"
       position="relative"
     >
+      <Box
+        width="100%"
+        height="100%"
+        bg="#F7FCFF"
+        color="#141515"
+        bgImage="url('/assets/thumbprint_bg.png')"
+      />
       <Header />
+      {!session && (
+        <Login
+          editableHistoryData={editableHistoryData}
+          setEditableHistoryData={setEditableHistoryData}
+          userData={userData}
+          setUserData={setUserData}
+          selectedSites={selectedSites}
+          setSlectedSites={setSlectedSites}
+        />
+      )}
       <Flex
         direction="column"
         align="center"
@@ -135,13 +159,6 @@ export default function Profile() {
         width="100%"
         overflow="hidden"
       >
-        <Box
-          width="100%"
-          height="100%"
-          bg="#F7FCFF"
-          color="#141515"
-          bgImage="url('/assets/thumbprint_bg.png')"
-        />
         {userData && (
           <Center
             position="absolute"
@@ -198,6 +215,13 @@ export default function Profile() {
             </Flex>
           </Center>
         )}
+        <Box
+          width="100%"
+          height="100%"
+          bg="#F7FCFF"
+          color="#141515"
+          bgImage="url('/assets/thumbprint_bg.png')"
+        />
       </Flex>
     </Flex>
   );
